@@ -3,16 +3,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 import pandas as pd
 
-class DatabaseConnector:
-    def __init__(self, file):
-        self.file = file
+class DatabaseConnector():
 
-
+    @classmethod
     def read_db_creds(self):
-        with open(self.file, 'r') as f:
+        with open('db_creds.yaml', 'r') as f:
             creds_dict = yaml.load(f, Loader=yaml.FullLoader)
         return creds_dict 
 
+    @classmethod
     def init_db_engine(self):
         db_credentials = self.read_db_creds()
         RDS_USER = db_credentials["RDS_USER"]
@@ -25,7 +24,10 @@ class DatabaseConnector:
 
         engine = create_engine(connection_string)
 
-    #def list_db_tables(self, engine):
+        return engine
 
+    @classmethod
+    def list_db_tables(self):
+        tables = self.init_db_engine().table_names()
+        return tables
 
-DatabaseConnector('db_creds.yaml').init_db_engine()
